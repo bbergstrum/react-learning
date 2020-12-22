@@ -1,39 +1,40 @@
 import React, { Component } from 'react';
 import './App.css';
-import person from './Person/Person';
 import Person from './Person/Person';
 
 class App extends Component {
   state = {
     persons: [
-      { name: 'Max', age: 28 },
-      { name: 'Manu', age: 29 },
-      { name: 'Stephanie', age: 26 }
+      { id: 'gawea2', name: 'Max', age: 28 },
+      { id: 'afg3h4', name: 'Manu', age: 29 },
+      { id: 'jfyjn8', name: 'Stephanie', age: 26 }
     ],
     otherState: 'some other value',
     showPersons: false,
   }
 
-  switchNameHandler = (newName) => {
-    // console.log('Was clicked!');
-    // DON'T DO THIS: this.state.persons[0].name = 'Maximilian';
-    this.setState( {
-      persons: [
-        { name: newName, age: 28 },
-        { name: 'Manu', age: 29 },
-        { name: 'Stephanie', age: 27 }
-      ]
-    } )
-  }
+  nameChangedHandler = (event, id) => {
+    // find index of person in persons array
+    const personIndex = this.state.persons.findIndex(pers => {
+      return pers.id === id // return the index of the person matched by id
+    });
 
-  nameChangedHandler = (event) => {
-    this.setState( {
-      persons: [
-        { name: 'Max', age: 28 },
-        { name: event.target.value, age: 29 },
-        { name: 'Stephanie', age: 26 }
-      ]
-    } )
+    // create a new object and copy the person object from the persons array - not mutating state
+    const person = {
+      ...this.state.persons[personIndex]
+    };
+
+    // Alternative: const person = OBject.assign({}, this.state.persons[personIndex])
+
+    // reassign the name of the copied person  
+    person.name = event.target.value;
+
+    // create a copy of the persons array
+    const persons = [...this.state.persons];
+    persons[personIndex] = person; //update one position with new updated person
+
+    // set the state of persons to the new updated array of persons
+    this.setState({ persons: persons }); 
   }
 
   togglePersonsHandler = () => {
@@ -69,7 +70,9 @@ class App extends Component {
               return <Person
                 click={() => this.deletePersonsHandler(index)}
                 name={person.name}
-                name={person.age} />
+                age={person.age}
+                key={person.id} 
+                changed={(event) => this.nameChangedHandler(event, person.id)} />
             })
           }
         </div> 
